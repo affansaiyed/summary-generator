@@ -31,13 +31,8 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_path = file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
             pdf_text = parse_pdf(file_path)
+        os.remove(file)
     return jsonify({'text': pdf_text})
-
-def clear_file(file):
-    file = request.files['file']
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file)
-    os.remove(file_path)
-    return
 
 def parse_pdf(file_path):
     text = ''
@@ -52,6 +47,9 @@ def get_coverletter(text):
     return
 
 def get_summary(text):
+    return
+
+def summarize(text):
     return
 
 if __name__ == "__main__":
