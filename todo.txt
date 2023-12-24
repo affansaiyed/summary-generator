@@ -1,0 +1,11 @@
+frontend featuring resume upload, delete buttons
+clear resume, output box fields
+copy output to clipboard
+switch between linkedin summary or cover letter
+edit output
+
+approach:
+take resume as input, parse important information
+summarize resume
+pass summary to a model that will generate a cover letter or linkedin summary from input
+display output in textbox 

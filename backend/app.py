@@ -19,6 +19,9 @@ def home():
     form = Resume()
     return render_template('index.html', form = form)
 
+def get_coverletter(text):
+    return
+
 if __name__ == "__main__":
     app.run(debug = True)
 
