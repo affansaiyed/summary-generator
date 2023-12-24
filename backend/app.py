@@ -3,7 +3,7 @@ from flask_restful import Api, Resource, reqparse, fields, marshal_with
 from flask import Flask, render_template
 from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 import PyPDF2
 import os
 
