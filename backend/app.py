@@ -1,12 +1,17 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource, reqparse, fields, marshal_with
 from flask import Flask, render_template
 from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
+from werkzeug import secure_filename
 import PyPDF2
+import os
 
 app = Flask(__name__)
 api = Api(app)
+UPLOAD_FOLDER = './uploads'
+ALLOWED_EXTENSIONS = {'pdf'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class Resume(FlaskForm):
     resume = FileField("resume")
@@ -19,8 +24,32 @@ def home():
     form = Resume()
     return render_template('index.html', form = form)
 
-def get_coverletter(text):
+def upload_file():
+    if request.method =='POST':
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            file_path = file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            pdf_text = parse_pdf(file_path)
+    return pdf_text
+
+def get_text(file):
+    jsonify({'text': file})
     return
+
+def clear_file(file_path):
+    os.remove(file_path)
+    return
+
+def parse_pdf(file_path):
+    text = ''
+    with open(file_path, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
+        for i in range(reader.numPages):
+            page = reader.getPage(i)
+            text = text + page.extract_text()
+    return text
+
 
 if __name__ == "__main__":
     app.run(debug = True)
