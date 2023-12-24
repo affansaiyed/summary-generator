@@ -31,25 +31,28 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_path = file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
             pdf_text = parse_pdf(file_path)
-    return pdf_text
+    return jsonify({'text': pdf_text})
 
-def get_text(file):
-    jsonify({'text': file})
-    return
-
-def clear_file(file_path):
+def clear_file(file):
+    file = request.files['file']
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file)
     os.remove(file_path)
     return
 
 def parse_pdf(file_path):
     text = ''
-    with open(file_path, "rb") as file:
+    with open(file_path, 'rb') as file:
         reader = PyPDF2.PdfReader(file)
         for i in range(reader.numPages):
             page = reader.getPage(i)
             text = text + page.extract_text()
     return text
 
+def get_coverletter(text):
+    return
+
+def get_summary(text):
+    return
 
 if __name__ == "__main__":
     app.run(debug = True)
