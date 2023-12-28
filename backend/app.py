@@ -6,7 +6,7 @@ from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
 import PyPDF2
 import torch
-from transformers import AutoTokenizer, AutoModelWithLMHead
+from transformers import AutoTokenizer, T5Model
 import sentencepiece
 import os
 
@@ -55,7 +55,7 @@ class ResumeInput:
 
     def summarize(self, text):
         tokenizer = AutoTokenizer.from_pretrained("t5-base")
-        model = AutoModelWithLMHead.from_pretrained("t5-base")
+        model = T5Model.from_pretrained("t5-base")
         text = text
 
         input = tokenizer.encode(text, return_tensors='pt', max_length=512, truncation=True)
