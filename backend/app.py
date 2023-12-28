@@ -21,42 +21,49 @@ class Resume(FlaskForm):
 @app.route('/home/', methods = ['GET', 'POST'])
 
 def home():
-    form = Resume()
-    return render_template('index.html', form = form)
+        form = Resume()
+        return render_template('index.html', form = form)
 
-def upload_file():
-    if request.method =='POST':
-        file = request.files.get('file')
-        if file:
-            pdf_text = parse_pdf(file)
-    return jsonify({'text': pdf_text})
+class ResumeInput:
+    def __init__(self, text, summary):
+        self.text = text
+        self.summary = summary
+        return
 
-def parse_pdf(file):
-    text = ''
-    with open(file, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        for i in range(reader.numPages):
-            page = reader.getPage(i)
-            text = text + page.extract_text()
-    return text
+    def upload_file(self):
+        if request.method =='POST':
+            file = request.files.get('file')
+            if file:
+                pdf_text = self.parse_pdf(file)
+        return jsonify({'text': pdf_text})
 
-def get_coverletter(text):
-    return
+    def parse_pdf(self, file):
+        text = ''
+        with open(file, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            for i in range(reader.numPages):
+                page = reader.getPage(i)
+                text = text + page.extract_text()
+        return text
 
-def get_summary(text):
-    return
+    def get_coverletter(self, summary):
+        return
 
-def summarize(text):
-    tokenizer = T5Tokenizer.from_pretrained("t5-base")
-    model = T5Model.from_pretrained("t5-base")
+    def get_linked_summary(self, summary):
+        return
 
-    input_ids = tokenizer(text).input_ids  # Batch size 1
-    decoder_input_ids = tokenizer("Studies show that", return_tensors="pt").input_ids  # Batch size 1
+    def summarize(self, text):
+        
+        tokenizer = T5Tokenizer.from_pretrained("t5-base")
+        model = T5Model.from_pretrained("t5-base")
 
-    # forward pass
-    outputs = model(input_ids=input_ids, decoder_input_ids=decoder_input_ids)
-    last_hidden_states = outputs.last_hidden_state
-    return
+        input_ids = tokenizer(self).input_ids  # Batch size 1
+        decoder_input_ids = tokenizer("Studies show that", return_tensors="pt").input_ids  # Batch size 1
+
+        # forward pass
+        outputs = model(input_ids=input_ids, decoder_input_ids=decoder_input_ids)
+        last_hidden_states = outputs.last_hidden_state
+        return
 
 if __name__ == "__main__":
     app.run(debug = True)
