@@ -5,20 +5,20 @@ from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
 import PyPDF2
+from transformers import T5Tokenizer, T5Model
+import sentencepiece
 import os
 
 app = Flask(__name__)
 api = Api(app)
-UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'pdf'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class Resume(FlaskForm):
     resume = FileField("resume")
     submit = SubmitField("submit")
 
 @app.route('/')
-@app.route('/home', methods = ['GET', 'POST'])
+@app.route('/home/', methods = ['GET', 'POST'])
 
 def home():
     form = Resume()
@@ -26,17 +26,14 @@ def home():
 
 def upload_file():
     if request.method =='POST':
-        file = request.files['file']
+        file = request.files.get('file')
         if file:
-            filename = secure_filename(file.filename)
-            file_path = file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
-            pdf_text = parse_pdf(file_path)
-        os.remove(file)
+            pdf_text = parse_pdf(file)
     return jsonify({'text': pdf_text})
 
-def parse_pdf(file_path):
+def parse_pdf(file):
     text = ''
-    with open(file_path, 'rb') as file:
+    with open(file, 'rb') as file:
         reader = PyPDF2.PdfReader(file)
         for i in range(reader.numPages):
             page = reader.getPage(i)
@@ -50,6 +47,15 @@ def get_summary(text):
     return
 
 def summarize(text):
+    tokenizer = T5Tokenizer.from_pretrained("t5-base")
+    model = T5Model.from_pretrained("t5-base")
+
+    input_ids = tokenizer(text).input_ids  # Batch size 1
+    decoder_input_ids = tokenizer("Studies show that", return_tensors="pt").input_ids  # Batch size 1
+
+    # forward pass
+    outputs = model(input_ids=input_ids, decoder_input_ids=decoder_input_ids)
+    last_hidden_states = outputs.last_hidden_state
     return
 
 if __name__ == "__main__":

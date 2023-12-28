@@ -1,5 +1,5 @@
-frontend featuring resume upload, delete buttons
-clear resume, output box fields
+frontend featuring resume upload button
+clear summary, output box fields
 copy output to clipboard
 switch between linkedin summary or cover letter
 edit output
