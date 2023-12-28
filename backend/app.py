@@ -5,7 +5,8 @@ from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
 import PyPDF2
-from transformers import T5Tokenizer, T5Model
+import torch
+from transformers import AutoTokenizer, AutoModelWithLMHead
 import sentencepiece
 import os
 
@@ -53,17 +54,14 @@ class ResumeInput:
         return
 
     def summarize(self, text):
-        
-        tokenizer = T5Tokenizer.from_pretrained("t5-base")
-        model = T5Model.from_pretrained("t5-base")
+        tokenizer = AutoTokenizer.from_pretrained("t5-base")
+        model = AutoModelWithLMHead.from_pretrained("t5-base")
+        text = text
 
-        input_ids = tokenizer(self).input_ids  # Batch size 1
-        decoder_input_ids = tokenizer("Studies show that", return_tensors="pt").input_ids  # Batch size 1
-
-        # forward pass
-        outputs = model(input_ids=input_ids, decoder_input_ids=decoder_input_ids)
-        last_hidden_states = outputs.last_hidden_state
-        return
+        input = tokenizer.encode(text, return_tensors='pt', max_length=512, truncation=True)
+        output = model.generate(input, max_length=250, min_length = 100, length_penalty = 5, num_beams = 2)
+        summary = tokenizer.decode(output)
+        return summary
 
 if __name__ == "__main__":
     app.run(debug = True)
