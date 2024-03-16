@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cover Letter Generator</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div class="form-group">
+      <form action = "/submit" method = "POST">
+        <label for = "Job Title">Job Title</label>
+        <input type = "text" placeholder = "Job Title" name = "job_title"><br><br>
+        <label for = "Job Description">Job Description</label>
+        <input type = "text" placeholder = "Job Description" name = "job_desc"><br><br>
+        <label for = "Work History">Work History</label>
+        <input type = "text" placeholder = "Work History" name = "work_exp"><br><br>
+      </form>
+    </div>
+    <div class = "container">
+      <form action = "/generate" method = "POST">
+      <textarea name = "output" id = "editor"></textarea>
+      </form>
+    </div>
+    <input type = "submit" value = "Submit" class = "button">
+    {{form.hidden_tag()}}
+    {{form.submit()}}
+  </body>
+</html>
