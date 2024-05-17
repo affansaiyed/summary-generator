@@ -1,13 +1,12 @@
 from flask import Flask, request
 import requests
-from flask_restful import Api
 from flask import Flask, render_template
-from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField
-
+import os
 
 app = Flask(__name__)
-model_url = ''
+API_URL = "https://api-inference.huggingface.co/models/TuningAI/Llama2_7B_Cover_letter_generator"
+HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
 
 class User:
      def __init__(self, job, description, experience, company):
@@ -32,11 +31,12 @@ def index():
           job_desc = request.form['job_desc']
           work_exp = request.form['work_exp']
           user = User(comp_name, job_title, job_desc, work_exp)
-          response = requests.post(model_url, json={'inputs': str(user)})
-          if response.status_code == 200:
-               processed_output = response.json().get('processed_output')
-          else:
-               processed_output = "Error processing input"
+          if user is not None:
+               response = requests.post(API_URL, headers=headers, json={'inputs': str(user)})
+               if response.status_code == 200:
+                    processed_output = response.json()
+               else:
+                    processed_output = "Error processing input"
       return render_template('index.html', comp = comp_name, title = job_title, desc = job_desc, exp = work_exp, output = processed_output)
 
 @app.route('/output')
